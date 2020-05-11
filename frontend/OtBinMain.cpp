@@ -4059,3 +4059,105 @@ void OPPRFnt_EmptrySet_Test_Impl()
 //	ios.stop();
 //}
 
+
+
+void GBF_Test_Impl(u64 setSize)
+{
+	InitDebugPrinting("../testout.txt");
+	u64 numHashFunctions = 31;
+	u64 mBfBitCount = 58 * setSize;
+	PRNG prng(_mm_set_epi32(4253465, 3434565, 234435, 23987045));
+
+	std::vector<block> mSetX(setSize), mSetY(setSize), garbledBF(mBfBitCount); //h(x) and value y
+
+	for (u64 i = 0; i < setSize; ++i)
+	{
+		mSetX[i] = prng.get<block>();
+		mSetY[i] = prng.get<block>();
+	}
+
+	//create hash
+
+	std::vector<AES> mBFHasher(numHashFunctions);
+	for (u64 i = 0; i < mBFHasher.size(); ++i)
+		mBFHasher[i].setKey(_mm_set1_epi64x(i));
+
+
+
+	std::vector<std::set<u64>> idxs(setSize);
+	for (u64 i = 0; i < setSize; ++i)
+	{
+		u64 firstFreeIdx(-1);
+		block sum = ZeroBlock;
+
+		//std::cout << "input[" << i << "] " << inputs[i] << std::endl;
+
+		//idxs.clear();
+		for (u64 hashIdx = 0; hashIdx < mBFHasher.size(); ++hashIdx)
+		{
+
+			block hashOut = mBFHasher[hashIdx].ecbEncBlock(mSetX[i]);
+			u64& idx = *(u64*)&hashOut;
+			idx %= mBfBitCount;
+			idxs[i].emplace(idx);
+
+			//std::cout << idx << " ";
+		}
+		//std::cout << "\n";
+
+		block test = ZeroBlock;
+		for (auto idx : idxs[i])
+		{
+			if (eq(garbledBF[idx], ZeroBlock))
+			{
+				if (firstFreeIdx == u64(-1))
+				{
+					firstFreeIdx = idx;
+					//std::cout << "firstFreeIdx: " << firstFreeIdx << std::endl;
+
+				}
+				else
+				{
+					garbledBF[idx] = _mm_set_epi64x(idx, idx);
+					//	std::cout << garbledBF[idx] <<"\n";
+					test = test ^ garbledBF[idx];
+					sum = sum ^ garbledBF[idx];
+					//std::cout << idx << " " << garbledBF[idx] << std::endl;
+				}
+			}
+			else
+			{
+				sum = sum ^ garbledBF[idx];
+				test = test ^ garbledBF[idx];
+				//std::cout << idx << " " << garbledBF[idx] << std::endl;
+			}
+		}
+
+		garbledBF[firstFreeIdx] = sum ^ mSetY[i];
+		//std::cout << firstFreeIdx << " " << garbledBF[firstFreeIdx] << std::endl;
+		test = test ^ garbledBF[firstFreeIdx];
+		//std::cout << test << "\n";
+		//std::cout << "sender " << i << " *   " << garbledBF[firstFreeIdx] << "    " << firstFreeIdx << std::endl;
+	}
+
+	//test
+	for (u64 i = 0; i < setSize; ++i)
+	{
+		std::cout << "mSetY[" << i << "]= " << mSetY[i] << std::endl;
+		//	std::cout << mSetX[i] << std::endl;
+
+		block sum = ZeroBlock;
+		for (auto idx : idxs[i])
+		{
+			///std::cout << idx << " " << garbledBF[idx] << std::endl;
+			sum = sum ^ garbledBF[idx];
+		}
+		std::cout << "sum = " << sum << std::endl;
+	}
+	/*for (u64 i = 0; i < garbledBF.size(); ++i)
+	{
+		if (eq(garbledBF[i], ZeroBlock))
+			garbledBF[i] = prng.get<block>();
+	}*/
+
+}

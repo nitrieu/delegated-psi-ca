@@ -25,7 +25,7 @@ void usage(const char* argv0)
 }
 int main(int argc, char** argv)
 {
-
+	GBF_Test_Impl(1 << 8);
 	//myCuckooTest_stash();
 	//Table_Based_Random_Test();
 	//OPPRF2_EmptrySet_Test_Main();
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	//OPPRFnt_EmptrySet_Test_Main();
 	//OPPRFn_Aug_EmptrySet_Test_Impl();
 	//OPPRFnt_EmptrySet_Test_Main();
-	OPPRF2_EmptrySet_Test_Main();
+//	OPPRF2_EmptrySet_Test_Main();
 	return 0;
 
 	u64 trials = 1;
