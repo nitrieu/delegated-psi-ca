@@ -4367,50 +4367,81 @@ void Poly_Test_Impl(u64 senderOriginalSetSize, u64 recvOriginalSetSize) {
 
 void OPPRF_CuckooHasher_Test_Impl(u64 setSize, u64 numberServer)
 {
-	InitDebugPrinting("../testout.txt");
-
-	u64 numHashFunctions = 3;
-	std::vector<block> inputs(setSize);
-	PRNG prng0(_mm_set_epi32(4253465, 3434565, 234435, 23987045));
-
-	for (u64 i = 0; i < inputs.size(); ++i)
-		inputs[i] = prng0.get<block>();
-
-	std::vector<AES> mBFHasher(numHashFunctions);
-	for (u64 i = 0; i < mBFHasher.size(); ++i)
-		mBFHasher[i].setKey(_mm_set1_epi64x(i));
+	//InitDebugPrinting("../testout.txt");
 
 	Timer mTimer;
-	mTimer.setTimePoint("start");
 
-	binSet bins;
-	bins.init(0, 2, setSize, 40, 1);
-	bins.hashing2Bins(inputs,1);
-	//bins.mCuckooBins.print(0, 1, 0, 0);
-
-	mTimer.setTimePoint("cuckoo:done");
-
-
-	////////////
-	std::vector<PRNG> seedsPRNG(numberServer-1);
-	for (int i = 0; i < numberServer-1; i++)
-		seedsPRNG[i].SetSeed(prng0.get<block>());
-
-	for (int i = 0; i < bins.mCuckooBins.mBins.size(); i++)
+	for (auto setSize : { 1 << 10, 1 << 11,1 << 12 })
 	{
-		block sum = inputs[0]; //[bins.mCuckooBins.mBins[i].idx()];
-		for (int j = 0; j < numberServer - 1; j++)
+		for (auto numberServer : {16,8,2 })
 		{
-			///std::cout << idx << " " << garbledBF[idx] << std::endl;
-			sum = sum ^ seedsPRNG[j].get<block>();;
+			u64 numHashFunctions = 3;
+			std::vector<block> inputs(setSize);
+			PRNG prng0(_mm_set_epi32(4253465, 3434565, 234435, 23987045));
+
+			for (u64 i = 0; i < inputs.size(); ++i)
+				inputs[i] = prng0.get<block>();
+
+			std::vector<AES> mBFHasher(numHashFunctions);
+			for (u64 i = 0; i < mBFHasher.size(); ++i)
+				mBFHasher[i].setKey(_mm_set1_epi64x(i));
+
+			mTimer.reset();
+			mTimer.setTimePoint("start");
+
+			binSet bins;
+			bins.init(0, 2, setSize, 40, 1);
+			bins.hashing2Bins(inputs, 1);
+			//bins.mCuckooBins.print(0, 1, 0, 0);
+
+			mTimer.setTimePoint("cuckoo:done");
+
+
+			////////////
+			std::vector<PRNG> seedsPRNG(numberServer - 1);
+			for (int i = 0; i < numberServer - 1; i++)
+				seedsPRNG[i].SetSeed(prng0.get<block>());
+
+			for (int i = 0; i < bins.mCuckooBins.mBins.size(); i++)
+			{
+				block sum = inputs[0]; //[bins.mCuckooBins.mBins[i].idx()];
+				for (int j = 0; j < numberServer - 1; j++)
+				{
+					///std::cout << idx << " " << garbledBF[idx] << std::endl;
+					sum = sum ^ seedsPRNG[j].get<block>();;
+				}
+
+			}
+			mTimer.setTimePoint("secretshare:done");
+
+			std::vector<block> values(inputs.size());
+			for (int i = 0; i < inputs.size(); i++)
+			{
+				values[i] = prng0.get<block>();
+			}
+
+			int intersection_count=0;
+			std::vector<block> receivedValues(bins.mCuckooBins.mBins.size());
+			for (int i = 0; i < receivedValues.size(); i++)
+			{
+				receivedValues[i] = prng0.get<block>();
+				for (int j = 0; j < values.size(); j++)
+				{
+					if (!memcmp((u8*)&receivedValues[i], &values[j], 10))
+					{
+						intersection_count++;
+					}
+				}
+			}
+			mTimer.setTimePoint("intersection:done");
+
+
+			Log::out << mTimer << Log::endl;
+			std::cout << "numberServer: " << numberServer << std::endl;
+			std::cout << setSize << "\t vs \t" << bins.mCuckooBins.mBins.size() << std::endl;
+
+			std::cout << "===============" << std::endl;
 		}
-
 	}
-	mTimer.setTimePoint("secretshare:done");
-	Log::out << mTimer << Log::endl;
-
-	std::cout << "numberServer: " << numberServer << std::endl;
-	std::cout << setSize  << "\t vs \t" << bins.mCuckooBins.mBins.size() << std::endl;
-
 }
 
