@@ -25,3 +25,4 @@ void BinSize(u64 setSize, std::vector<block> set, u64 psiSecParam);
 //void OPPRFn_EmptrySet_Test();
 void GBF_Test_Impl(u64 senderSetSize, u64 recvSetSize);
 void Poly_Test_Impl(u64 senderSetSize, u64 recvSetSize);
+void OPPRF_CuckooHasher_Test_Impl(u64 setSize, u64 numberServer);

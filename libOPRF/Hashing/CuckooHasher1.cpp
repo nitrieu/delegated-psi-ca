@@ -33,7 +33,7 @@ namespace osuCrypto
 
     // not sure if this needs a stash of 40, but should be safe enough.
     CuckooParam1 k2n07s40CuckooParam1
-	{ { 1.5,0.17 },{ 3,2 },{ 27,64 } };
+	{ { 1.5,0 },{ 3,2 },{ 27,64 } };
 
 
     CuckooHasher1::CuckooHasher1()
@@ -172,6 +172,8 @@ namespace osuCrypto
 				mParams.mSenderBinSize[0] = std::pow(2, std::ceil(std::log2(mParams.mSenderBinSize[0])));;
 				mParams.mSenderBinSize[1] = std::pow(2, std::ceil(std::log2(mParams.mSenderBinSize[1])));;
 			}
+
+        mParams = k2n07s40CuckooParam1;
 
         mHashes.resize(n * mParams.mNumHashes[0], u64(-1));
         mHashesView = MatrixView<u64>(mHashes.begin(), mHashes.end(), mParams.mNumHashes[0]);

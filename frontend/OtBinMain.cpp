@@ -4063,7 +4063,7 @@ void OPPRFnt_EmptrySet_Test_Impl()
 
 void GBF_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 {
-	InitDebugPrinting("../testout.txt");
+	//InitDebugPrinting("../testout.txt");
 	u64 numHashFunctions = 31;
 	u64 mBfBitCount = 58 * senderSetSize;
 	PRNG prng(_mm_set_epi32(4253465, 3434565, 234435, 23987045));
@@ -4169,7 +4169,7 @@ void GBF_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 			sum = sum ^ garbledBF[idx];
 		}
 
-		if(i==0) //for test
+		if (i == 0) //for test
 			std::cout << mSetY[0] << "\t vs \t" << sum << std::endl;
 	}
 	/*for (u64 i = 0; i < garbledBF.size(); ++i)
@@ -4179,14 +4179,18 @@ void GBF_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 	}*/
 
 	auto end = mTimer.setTimePoint("GBF.done");
-	double time1 = std::chrono::duration_cast<std::chrono::milliseconds>(mid - start).count();
-	double time2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - mid).count();
-	double time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	//double time1 = std::chrono::duration_cast<std::chrono::milliseconds>(mid - start).count();
+	//double time2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - mid).count();
+	//double time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	Log::out << "senderSetSize vs recvSetSize:  " << senderSetSize  << "\t vs \t" << recvSetSize << "\n";
-	Log::out << "time1= " << time1 << "\n";
-	Log::out << "time2= " << time2 << "\n";
-	Log::out << "total= " << time << "\n";
+	//Log::out << "senderSetSize vs recvSetSize:  " << senderSetSize  << "\t vs \t" << recvSetSize << "\n";
+	//Log::out << "time1= " << time1 << "\n";
+	//Log::out << "time2= " << time2 << "\n";
+	//Log::out << "total= " << time << "\n";
+
+	Log::out << mTimer << "\n";
+	Log::out << senderSetSize << " \t vs \t" << recvSetSize << "\n";
+
 
 	Log::out << Log::endl;
 
@@ -4198,8 +4202,8 @@ void GBF_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 void polynomial_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 {
 	BaseOPPRF poly;
-	u64 numBins = 1.5*senderSetSize; //3 hash functions
-	u64 binSize = 3*(senderSetSize+ numBins -1)/ numBins; //3 hash functions
+	u64 numBins = 1.5 * senderSetSize; //3 hash functions
+	u64 binSize = 3 * (senderSetSize + numBins - 1) / numBins; //3 hash functions
 
 	u64 maskSize = roundUpTo(40 + std::log2(binSize) - 1, 8) / 8;
 	poly.poly_init(maskSize);
@@ -4257,28 +4261,41 @@ void polynomial_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 
 #include "polyFFT.h"
 
-void Poly_Test_Impl(u64 senderSetSize, u64 recvSetSize) {
+void Poly_Test_Impl(u64 senderOriginalSetSize, u64 recvOriginalSetSize) {
 
-	InitDebugPrinting("../testout.txt");
+//	InitDebugPrinting("../testout.txt");
+
 	const u64 numSuperBlocks = 4;
 	PRNG prng0(_mm_set_epi32(4253465, 3434565, 234435, 23987045));
 	//	u64 lastPolyMaskBytes = 20;
 
 
-	std::vector<block> inputs(senderSetSize), setEval(recvSetSize);
-	std::vector<std::array<block, numSuperBlocks>> setValues(inputs.size());
+	u64 numBin = recvOriginalSetSize;
+	u64 senderSetSize = senderOriginalSetSize / numBin; //assuming random distribtion
+	u64 recvSetSize = recvOriginalSetSize / numBin; //assuming random distribtion
+
+	std::vector<std::array<block, numSuperBlocks>> inputs(senderSetSize), setEval(recvSetSize);
+	std::vector<block> setValues(inputs.size());
 
 	for (u64 i = 0; i < inputs.size(); ++i)
 	{
-		inputs[i] = prng0.get<block>();
+		setValues[i] = prng0.get<block>();
 		for (u64 j = 0; j < numSuperBlocks; ++j)
-			setValues[i][j] = prng0.get<block>();
+		{
+			inputs[i][j] = prng0.get<block>();
+		}
 	}
-	
+
 	for (u64 i = 0; i < recvSetSize; ++i)
-		setEval[i] = prng0.get<block>();
+		for (u64 j = 0; j < numSuperBlocks; ++j)
+			setEval[i][j] = prng0.get<block>();
 
 	setEval[0] = inputs[0];
+
+	Timer mTimer;
+
+	ZZ_pX Polynomials;
+
 
 	u64 lastPolyMaskBytes = 448 / 8;
 	u64 numThreads = 1;
@@ -4291,65 +4308,109 @@ void Poly_Test_Impl(u64 senderSetSize, u64 recvSetSize) {
 	u64 degree = inputs.size() - 1;
 	ZZ_p* zzX = new ZZ_p[inputs.size()];
 	ZZ_p* zzY = new ZZ_p[inputs.size()];
-
 	ZZ_p* zzEval = new ZZ_p[setEval.size()];
 
 	ZZ zz;
 	ZZ_pX* M = new ZZ_pX[degree * 2 + 1];;
 	ZZ_p* a = new ZZ_p[degree + 1];;
 	ZZ_pX* temp = new ZZ_pX[degree * 2 + 1];
-	ZZ_pX Polynomials;
-	std::vector<u8> sendBuffs;
-
-	//===================== = inter========== =
-
-	Timer mTimer;
-	double mTime = 0;
-	auto start = mTimer.setTimePoint("poly.setup");
-
-	for (u64 idx = 0; idx < inputs.size(); idx++)
-	{
-		ZZFromBytes(zz, (u8*)&inputs[idx], sizeof(block));
-		zzX[idx] = to_ZZ_p(zz);
-		//	std::cout << zzX[idx] << "\n";
-	}
-
-	for (u64 idx = 0; idx < inputs.size(); idx++)
-	{
-		ZZFromBytes(zz, (u8*)&setValues[idx][2], lastPolyMaskBytes);
-		zzY[idx] = to_ZZ_p(zz);
-	}
-
-	//===================== = eval========== =
-	ZZ_pX* p_tree = new ZZ_pX[degree * 2 + 1];
-	ZZ_pX* reminders = new ZZ_pX[degree * 2 + 1];
 	ZZ_p* zzY1 = new ZZ_p[inputs.size()];
 
+	mTimer.reset();
+	mTimer.setTimePoint("poly.interpolate");
+
+	for (u64 idxBin = 0; idxBin < numBin; idxBin++)
+	{
+		//===================== = inter========== =
+		for (u64 idx = 0; idx < inputs.size(); idx++)
+		{
+			ZZFromBytes(zz, (u8*)&inputs[idx], lastPolyMaskBytes );
+			zzX[idx] = to_ZZ_p(zz);
+		}
+
+		for (u64 idx = 0; idx < inputs.size(); idx++)
+		{
+			ZZFromBytes(zz, (u8*)&setValues[idx], sizeof(block));
+			zzY[idx] = to_ZZ_p(zz);
+		}
+
+		prepareForInterpolate(zzX, degree, M, a, numThreads, mPrime);
+		iterative_interpolate_zp(Polynomials, temp, zzY, a, M, degree * 2 + 1, numThreads, mPrime);
+	}
+
+	auto mid = mTimer.setTimePoint("poly.eval");
+	for (u64 idxBin = 0; idxBin < numBin; idxBin++)
+	{
 		for (u64 idx = 0; idx < setEval.size(); idx++)
 		{
-			ZZFromBytes(zz, (u8*)&setEval[idx], sizeof(block));
+			ZZFromBytes(zz, (u8*)&setEval[idx], lastPolyMaskBytes);
 			zzEval[idx] = to_ZZ_p(zz);
 		}
 
-
-
-	mTimer.setTimePoint("poly.interpolate");
-	prepareForInterpolate(zzX, degree, M, a, numThreads, mPrime);
-	iterative_interpolate_zp(Polynomials, temp, zzY, a, M, degree * 2 + 1, numThreads, mPrime);
-
-
-	auto mid = mTimer.setTimePoint("poly.eval");
-
-	for (u64 idx = 0; idx < setEval.size(); idx++)
-	{
-		eval(zzY1[idx], Polynomials, zzEval[idx]);
+		for (u64 idx = 0; idx < setEval.size(); idx++)
+		{
+			eval(zzY1[idx], Polynomials, zzEval[idx]);
+		}
 	}
-	
 
-	auto end = mTimer.setTimePoint("poly.done");
+	mTimer.setTimePoint("poly.done");
 	Log::out << mTimer << Log::endl;
-	
+
+	std::cout << senderSetSize << "\t vs \t" << recvSetSize << std::endl;
+	std::cout << senderOriginalSetSize << "\t vs \t" << recvOriginalSetSize << std::endl;
+
 	std::cout << zzY1[0] << "\t vs \t" << zzY[0] << std::endl;
+
+
+
+}
+
+void OPPRF_CuckooHasher_Test_Impl(u64 setSize, u64 numberServer)
+{
+	InitDebugPrinting("../testout.txt");
+
+	u64 numHashFunctions = 3;
+	std::vector<block> inputs(setSize);
+	PRNG prng0(_mm_set_epi32(4253465, 3434565, 234435, 23987045));
+
+	for (u64 i = 0; i < inputs.size(); ++i)
+		inputs[i] = prng0.get<block>();
+
+	std::vector<AES> mBFHasher(numHashFunctions);
+	for (u64 i = 0; i < mBFHasher.size(); ++i)
+		mBFHasher[i].setKey(_mm_set1_epi64x(i));
+
+	Timer mTimer;
+	mTimer.setTimePoint("start");
+
+	binSet bins;
+	bins.init(0, 2, setSize, 40, 1);
+	bins.hashing2Bins(inputs,1);
+	//bins.mCuckooBins.print(0, 1, 0, 0);
+
+	mTimer.setTimePoint("cuckoo:done");
+
+
+	////////////
+	std::vector<PRNG> seedsPRNG(numberServer-1);
+	for (int i = 0; i < numberServer-1; i++)
+		seedsPRNG[i].SetSeed(prng0.get<block>());
+
+	for (int i = 0; i < bins.mCuckooBins.mBins.size(); i++)
+	{
+		block sum = inputs[0]; //[bins.mCuckooBins.mBins[i].idx()];
+		for (int j = 0; j < numberServer - 1; j++)
+		{
+			///std::cout << idx << " " << garbledBF[idx] << std::endl;
+			sum = sum ^ seedsPRNG[j].get<block>();;
+		}
+
+	}
+	mTimer.setTimePoint("secretshare:done");
+	Log::out << mTimer << Log::endl;
+
+	std::cout << "numberServer: " << numberServer << std::endl;
+	std::cout << setSize  << "\t vs \t" << bins.mCuckooBins.mBins.size() << std::endl;
 
 }
 

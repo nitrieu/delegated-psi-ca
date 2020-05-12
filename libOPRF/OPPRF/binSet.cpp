@@ -43,7 +43,7 @@ namespace osuCrypto
 		std::vector<OPPRFReceiver> mOpprfRecvs(3);*/
 		
 		
-			mSimpleBins.init(mN, mOpt);
+			//mSimpleBins.init(mN, mOpt);
 			mCuckooBins.init(mN, mOpt);
     }
 
@@ -133,7 +133,7 @@ namespace osuCrypto
 						}		                 					
 					}
 
-					mSimpleBins.insertBatch(tempIdxBuff, hashes);
+				//	mSimpleBins.insertBatch(tempIdxBuff, hashes);
 
 					mCuckooBins.insertBatch(tempIdxBuff, hashes, w);
 				
@@ -143,7 +143,7 @@ namespace osuCrypto
 					insertFuture.get();
 				else
 					insertProm.set_value();
-
+#if 0
 				if (tIdx == 0) {
 					CuckooHasher1::Workspace stashW(mCuckooBins.mStashIdxs.size());
 					MatrixView<u64> stashHashes(mCuckooBins.mStashIdxs.size(), mCuckooBins.mParams.mNumHashes[1]);
@@ -163,7 +163,7 @@ namespace osuCrypto
 					insertStashProm.set_value();
 
 
-
+#endif
 
 				/*for (u64 i = 0; i < mBins.mBinCount; ++i)
 				{
@@ -180,7 +180,7 @@ namespace osuCrypto
 				if (tIdx == 0) gTimer.setTimePoint("online.recv.thrdStart");
 
 #pragma region Init Bin
-#if 1
+#if 0
 				
 				
 				if (mCuckooBins.mBins.size() != mSimpleBins.mBins.size())

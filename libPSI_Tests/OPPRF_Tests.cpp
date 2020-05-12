@@ -407,61 +407,7 @@ void Bit_Position_Random_Test_Impl()
 
 }
 
-void OPPRF_CuckooHasher_Test_Impl()
-{
-#if 0
-	u64 setSize = 10000;
 
-	u64 h = 2;
-	std::vector<u64> _hashes(setSize * h + 1);
-	MatrixView<u64> hashes(_hashes.begin(), _hashes.end(), h);
-	PRNG prng(ZeroBlock);
-
-	for (u64 i = 0; i < hashes.size()[0]; ++i)
-	{
-		for (u64 j = 0; j < h; ++j)
-		{
-			hashes[i][j] = prng.get<u64>();
-		}
-	}
-
-	CuckooHasher hashMap0;
-	CuckooHasher hashMap1;
-	CuckooHasher::Workspace w(1);
-
-	hashMap0.init(setSize, 40, 1, true);
-	hashMap1.init(setSize, 40, 1, true);
-
-
-	for (u64 i = 0; i < setSize; ++i)
-	{
-		//if (i == 6) hashMap0.print();
-
-		hashMap0.insert(i, hashes[i]);
-
-		std::vector<u64> tt{ i };
-		MatrixView<u64> mm(hashes[i].data(), 1, 2, false);
-		hashMap1.insertBatch(tt, mm, w);
-
-
-		//if (i == 6) hashMap0.print();
-		//if (i == 6) hashMap1.print();
-
-		//if (hashMap0 != hashMap1)
-		//{
-		//    std::cout << i << std::endl;
-
-		//    throw UnitTestFail();
-		//}
-
-	}
-
-	if (hashMap0 != hashMap1)
-	{
-		throw UnitTestFail();
-	}
-#endif
-}
 
 void Channel_Test_Impl() {
 	std::string name("psi");
