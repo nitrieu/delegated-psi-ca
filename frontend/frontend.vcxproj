@@ -86,12 +86,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="miraclTest.cpp" />
     <ClCompile Include="OtBinMain.cpp" />
+    <ClCompile Include="polyFFT.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitPosition.h" />
     <ClInclude Include="CLP.h" />
     <ClInclude Include="OtBinMain.h" />
+    <ClInclude Include="polyFFT.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>

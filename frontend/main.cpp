@@ -25,7 +25,8 @@ void usage(const char* argv0)
 }
 int main(int argc, char** argv)
 {
-	GBF_Test_Impl(1 << 8);
+	//GBF_Test_Impl(1 << 12, 1<<3);
+	Poly_Test_Impl(1 << 10, 1 << 1);
 	//myCuckooTest_stash();
 	//Table_Based_Random_Test();
 	//OPPRF2_EmptrySet_Test_Main();
