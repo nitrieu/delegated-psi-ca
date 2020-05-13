@@ -27,28 +27,17 @@ int main(int argc, char** argv)
 {
 
 		
-	const u64 senderOrginalSetSize = 1 << 20;
-	const u64 recvOrginalSetSize = 1 << 12;
-	const u64 numberCloudServer = 16;
-
-	OPPRF_CuckooHasher_Test_Impl(recvOrginalSetSize, numberCloudServer);
+	//const u64 senderOrginalSetSize = 1 << 20;
+	//const u64 recvOrginalSetSize = 1 << 12;
+	const u64 numberCloudServer = 8;
 	
+
+	GBF_BenchMark(numberCloudServer);
+	Poly_BenchMark(numberCloudServer);
+
+	//OPPRF_CuckooHasher_Test_Impl(recvOrginalSetSize, numberCloudServer);
+
 	return 0;
-
-
-	u64 senderSetSize = 1.5 *3* senderOrginalSetSize / numberCloudServer; //1.5 for client's hashing, 3 for bark-oprf, 8 for #cloud servers
-	u64 recvSetSize = 1.5 *3* recvOrginalSetSize / numberCloudServer; //
-
-	std::cout << "numberCloudServer = " << numberCloudServer << std::endl;
-	std::cout << senderOrginalSetSize << " vs " << recvOrginalSetSize << std::endl;
-
-	std::cout << " ===========GBF_Test_Impl==========\n " << std::endl;
-	GBF_Test_Impl(senderSetSize, recvSetSize);
-	
-	std::cout << " ===========Poly_Test_Impl==========\n " << std::endl;
-	Poly_Test_Impl(senderSetSize, recvSetSize);
-
-	
 	//myCuckooTest_stash();
 	//Table_Based_Random_Test();
 	//OPPRF2_EmptrySet_Test_Main();

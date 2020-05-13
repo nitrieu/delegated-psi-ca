@@ -4183,21 +4183,17 @@ void GBF_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 	//double time2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - mid).count();
 	//double time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	//Log::out << "senderSetSize vs recvSetSize:  " << senderSetSize  << "\t vs \t" << recvSetSize << "\n";
+	//Log::out << "senderSetSizeperBin vs recvSetSizeperBin:  " << senderSetSizeperBin  << "\t vs \t" << recvSetSizeperBin << "\n";
 	//Log::out << "time1= " << time1 << "\n";
 	//Log::out << "time2= " << time2 << "\n";
 	//Log::out << "total= " << time << "\n";
 
 	Log::out << mTimer << "\n";
 	Log::out << senderSetSize << " \t vs \t" << recvSetSize << "\n";
-
-
 	Log::out << Log::endl;
 
 
 }
-
-
 
 void polynomial_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 {
@@ -4248,7 +4244,7 @@ void polynomial_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 	double time2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - mid).count();
 	double time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	Log::out << "senderSetSize vs recvSetSize:  " << senderSetSize << "\t vs \t" << recvSetSize << "\n";
+	Log::out << "senderSetSizeperBin vs recvSetSizeperBin:  " << senderSetSize << "\t vs \t" << recvSetSize << "\n";
 	Log::out << "time1= " << time1 << "\n";
 	Log::out << "time2= " << time2 << "\n";
 	Log::out << "total= " << time << "\n";
@@ -4261,7 +4257,7 @@ void polynomial_Test_Impl(u64 senderSetSize, u64 recvSetSize)
 
 #include "polyFFT.h"
 
-void Poly_Test_Impl(u64 senderOriginalSetSize, u64 recvOriginalSetSize) {
+void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 
 //	InitDebugPrinting("../testout.txt");
 
@@ -4270,11 +4266,11 @@ void Poly_Test_Impl(u64 senderOriginalSetSize, u64 recvOriginalSetSize) {
 	//	u64 lastPolyMaskBytes = 20;
 
 
-	u64 numBin = recvOriginalSetSize;
-	u64 senderSetSize = senderOriginalSetSize / numBin; //assuming random distribtion
-	u64 recvSetSize = recvOriginalSetSize / numBin; //assuming random distribtion
+	u64 numBin = recvSetSizeperServer;
+	u64 senderSetSizeperBin = senderSetSizeperServer / numBin; //assuming random distribtion
+	u64 recvSetSizeperBin = recvSetSizeperServer / numBin; //assuming random distribtion
 
-	std::vector<std::array<block, numSuperBlocks>> inputs(senderSetSize), setEval(recvSetSize);
+	std::vector<std::array<block, numSuperBlocks>> inputs(senderSetSizeperBin), setEval(recvSetSizeperBin);
 	std::vector<block> setValues(inputs.size());
 
 	for (u64 i = 0; i < inputs.size(); ++i)
@@ -4286,7 +4282,7 @@ void Poly_Test_Impl(u64 senderOriginalSetSize, u64 recvOriginalSetSize) {
 		}
 	}
 
-	for (u64 i = 0; i < recvSetSize; ++i)
+	for (u64 i = 0; i < recvSetSizeperBin; ++i)
 		for (u64 j = 0; j < numSuperBlocks; ++j)
 			setEval[i][j] = prng0.get<block>();
 
@@ -4356,16 +4352,54 @@ void Poly_Test_Impl(u64 senderOriginalSetSize, u64 recvOriginalSetSize) {
 	mTimer.setTimePoint("poly.done");
 	Log::out << mTimer << Log::endl;
 
-	std::cout << senderSetSize << "\t vs \t" << recvSetSize << std::endl;
-	std::cout << senderOriginalSetSize << "\t vs \t" << recvOriginalSetSize << std::endl;
-
+	std::cout << senderSetSizeperBin << "\t vs \t" << recvSetSizeperBin << std::endl;
+	std::cout << senderSetSizeperServer << "\t vs \t" << recvSetSizeperServer << std::endl;
 	std::cout << zzY1[0] << "\t vs \t" << zzY[0] << std::endl;
-
-
-
 }
 
-void OPPRF_CuckooHasher_Test_Impl(u64 setSize, u64 numberServer)
+void GBF_BenchMark(u64 numberCloudServer)
+{
+	std::cout << " ===========GBF_BenchMark==========\n " << std::endl;
+
+	for (auto senderOrginalSetSize : { 1 << 20, 1 << 22,1 << 24 })
+	{
+		for (auto recvOrginalSetSize : { 1 << 10, 1 << 12 })
+		{
+			u64 senderSetSize =  3 * senderOrginalSetSize / numberCloudServer; //1.5 for client's hashing, 3 for bark-oprf, 8 for #cloud servers
+			u64 recvSetSize =  3 * recvOrginalSetSize / numberCloudServer; //
+
+			std::cout << "numberCloudServer = " << numberCloudServer << std::endl;
+			std::cout << senderOrginalSetSize << " vs " << recvOrginalSetSize << "\t  orginial" << std::endl;
+			std::cout << senderSetSize << " vs " << recvSetSize << "\t  per server" << std::endl;
+			GBF_Test_Impl(senderSetSize, recvSetSize);
+			std::cout << " ========================\n " << std::endl;
+
+
+		}
+	}
+}
+
+void Poly_BenchMark(u64 numberCloudServer)
+{
+	std::cout << " ===========Poly_BenchMark==========\n " << std::endl;
+
+	for (auto senderOrginalSetSize : { 1 << 20, 1 << 22,1 << 24 })
+	{
+		for (auto recvOrginalSetSize : { 1 << 10, 1 << 12 })
+		{
+			u64 senderSetSize = 3 * senderOrginalSetSize / numberCloudServer; //1.5 for client's hashing, 3 for bark-oprf, 8 for #cloud servers
+			u64 recvSetSize = 3 * recvOrginalSetSize / numberCloudServer; //
+			
+			std::cout << "numberCloudServer = " << numberCloudServer << std::endl;
+			std::cout << senderOrginalSetSize << " vs " << recvOrginalSetSize << "\t  orginial" << std::endl;
+			std::cout << senderSetSize << " vs " << recvSetSize << "\t  per server" << std::endl;
+			Poly_Test_Impl(senderSetSize, recvSetSize);
+			std::cout << " ========================\n " << std::endl;
+
+		}
+	}
+}
+void OPPRF_CuckooHasher_Test_Impl(u64 numberServer)
 {
 	//InitDebugPrinting("../testout.txt");
 
