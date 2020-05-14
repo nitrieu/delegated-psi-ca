@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 	const u64 numberCloudServer = 8;
 	
 
-	GBF_BenchMark(numberCloudServer);
+	//GBF_BenchMark(numberCloudServer);
 	Poly_BenchMark(numberCloudServer);
 
 	//OPPRF_CuckooHasher_Test_Impl(recvOrginalSetSize, numberCloudServer);

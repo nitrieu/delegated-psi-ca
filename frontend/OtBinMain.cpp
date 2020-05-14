@@ -4266,9 +4266,13 @@ void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 	//	u64 lastPolyMaskBytes = 20;
 
 
-	u64 numBin = recvSetSizeperServer;
-	u64 senderSetSizeperBin = senderSetSizeperServer / numBin; //assuming random distribtion
+	u64 senderSetSizeperBin = 1024;
+	u64 numBin = (senderSetSizeperServer*1.03)/senderSetSizeperBin; //2% dummy
+	//u64 numBin = recvSetSizeperServer;
+	//u64 senderSetSizeperBin = senderSetSizeperServer / numBin; //assuming random distribtion
 	u64 recvSetSizeperBin = recvSetSizeperServer / numBin; //assuming random distribtion
+	if (recvSetSizeperBin == 0)
+		recvSetSizeperBin = 1;
 
 	std::vector<std::array<block, numSuperBlocks>> inputs(senderSetSizeperBin), setEval(recvSetSizeperBin);
 	std::vector<block> setValues(inputs.size());
@@ -4301,7 +4305,7 @@ void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 	ZZ_p::init(ZZ(mPrime));
 
 
-	u64 degree = inputs.size() - 1;
+	u64 degree = inputs.size() - 1; //2%
 	ZZ_p* zzX = new ZZ_p[inputs.size()];
 	ZZ_p* zzY = new ZZ_p[inputs.size()];
 	ZZ_p* zzEval = new ZZ_p[setEval.size()];
