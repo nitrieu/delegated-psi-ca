@@ -4300,7 +4300,7 @@ void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 	u64 lastPolyMaskBytes = 80 / 8;
 	u64 numThreads = 1;
 	//ZZ mPrime = to_ZZ("340282366920938463463374607431768211507");
-	ZZ mPrime = to_ZZ("1461501637330902918203684832716283019655932542983");
+	ZZ mPrime = to_ZZ("1208925819614629174706189");
 
 	ZZ_p::init(ZZ(mPrime));
 
@@ -4330,7 +4330,7 @@ void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 
 		for (u64 idx = 0; idx < inputs.size(); idx++)
 		{
-			ZZFromBytes(zz, (u8*)&setValues[idx], sizeof(block));
+			ZZFromBytes(zz, (u8*)&setValues[idx], lastPolyMaskBytes);
 			zzY[idx] = to_ZZ_p(zz);
 		}
 
