@@ -4297,10 +4297,9 @@ void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 	ZZ_pX Polynomials;
 
 
-	u64 lastPolyMaskBytes = 80 / 8;
+	u64 lastPolyMaskBytes = 10;
 	u64 numThreads = 1;
-	//ZZ mPrime = to_ZZ("340282366920938463463374607431768211507");
-	ZZ mPrime = to_ZZ("1208925819614629174706189");
+	ZZ mPrime = to_ZZ("1208925819614629174706189"); //nextprime(2^80)
 
 	ZZ_p::init(ZZ(mPrime));
 
