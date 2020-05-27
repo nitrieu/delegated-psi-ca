@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 		
 	//const u64 senderOrginalSetSize = 1 << 20;
 	//const u64 recvOrginalSetSize = 1 << 12;
-	const u64 numberCloudServer = 8;
+	const u64 numberCloudServer = 32;
 	
 
 	//GBF_BenchMark(numberCloudServer);
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
 	//OPPRF_CuckooHasher_Test_Impl(recvOrginalSetSize, numberCloudServer);
 
-	return 0;
+	return 0;	
 	//myCuckooTest_stash();
 	//Table_Based_Random_Test();
 	//OPPRF2_EmptrySet_Test_Main();

@@ -4297,7 +4297,7 @@ void Poly_Test_Impl(u64 senderSetSizeperServer, u64 recvSetSizeperServer) {
 	ZZ_pX Polynomials;
 
 
-	u64 lastPolyMaskBytes = 448 / 8;
+	u64 lastPolyMaskBytes = 80 / 8;
 	u64 numThreads = 1;
 	//ZZ mPrime = to_ZZ("340282366920938463463374607431768211507");
 	ZZ mPrime = to_ZZ("1461501637330902918203684832716283019655932542983");
@@ -4387,7 +4387,7 @@ void Poly_BenchMark(u64 numberCloudServer)
 {
 	std::cout << " ===========Poly_BenchMark==========\n " << std::endl;
 
-	for (auto senderOrginalSetSize : { 1 << 20, 1 << 22,1 << 24 })
+	for (auto senderOrginalSetSize : { 1 << 22, 1 << 24,1 << 26 })
 	{
 		for (auto recvOrginalSetSize : { 1 << 10, 1 << 12 })
 		{
