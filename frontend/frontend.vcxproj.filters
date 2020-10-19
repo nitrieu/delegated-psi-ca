@@ -18,39 +18,42 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="miraclTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OtBinMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CLP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bitPosition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="polyFFT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hashing\BitPosition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hashing\binSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hashing\CuckooHasher1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hashing\SimpleHasher1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OtBinMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CLP.h">
+    <ClInclude Include="polyFFT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bitPosition.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Hashing\BitPosition.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyFFT.h">
+    <ClInclude Include="Hashing\binSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hashing\CuckooHasher1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hashing\SimpleHasher1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

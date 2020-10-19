@@ -1,18 +1,12 @@
 #include "Network/BtEndpoint.h" 
 
-#include "OPPRF/OPPRFReceiver.h"
-#include "OPPRF/OPPRFSender.h"
 
 #include <fstream>
 using namespace osuCrypto;
 #include "util.h"
 
 #include "Common/Defines.h"
-#include "NChooseOne/KkrtNcoOtReceiver.h"
-#include "NChooseOne/KkrtNcoOtSender.h"
 
-#include "NChooseOne/Oos/OosNcoOtReceiver.h"
-#include "NChooseOne/Oos/OosNcoOtSender.h"
 #include "Common/Log.h"
 #include "Common/Log1.h"
 #include "Common/Timer.h"
