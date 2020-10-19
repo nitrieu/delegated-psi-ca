@@ -19,8 +19,8 @@ void usage(const char* argv0)
 {
 	std::cout << "Please use:" << std::endl;
 	std::cout << "\t -m : number of cloud servers. E.g. -m 2" << std::endl;
-	std::cout << "\t -p : polynomial interpolation/evaluation" << std::endl;
-	std::cout << "\t -g: GBF interpolation/evaluation" << std::endl;
+	std::cout << "\t -p : polynomial pack/unpack" << std::endl;
+	std::cout << "\t -g: GBF pack/unpack" << std::endl;
 	std::cout << "\t -c: client's performance" << std::endl;
 
 }
