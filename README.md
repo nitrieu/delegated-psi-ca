@@ -5,7 +5,7 @@ This is the implementation of the building blocks (pack/unpack, end-user’s sid
 
 #### Quick Installation (Linux)
     $ git clone https://github.com/nitrieu/delegated-psi-ca.git
-    $ cd delegated-psi-ca/thirdparty
+    $ cd delegated-psi-ca
     $ bash buildAll.get
 
 If you have any problem, see below.
